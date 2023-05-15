@@ -1,12 +1,8 @@
-/*좌표 압축*/
+//18870
 
 /*
-	a vector에 원본 vector 저장
-	b vector = a vector copy
-	b vector 오름차순 정렬 후 erase, unique 활용해서 중복 제거
-	lower_bound: 찾으려는 key 값보다 같거나 큰 숫자가 
-			배열 몇 번째에서 처음 등장하는지 찾기 위해 사용
-	iterator it 변수에 저장한 후 시작 주소값을 빼주며 반환
+	lower_bound
+		찾으려는 key 값보다 같거나 큰 숫자가 배열 몇 번째에서 처음 등장하는지 찾기 위함
 */
 
 #include <iostream>
@@ -17,28 +13,30 @@ using namespace std;
 
 int main() {
 
+	std::ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+
 	int n;
 	cin >> n;
 
-	vector<int> a(n); //처음 벡터
+	vector<int> vA;
+	vector<int> vB(n);
 
-	int num;
+	int tmp;
 
 	for (int i = 0; i < n; i++) {
-		cin >> a[i];
+		cin >> tmp;
+		vA.push_back(tmp);
+		vB[i] = vA[i]; //copy
 	}
 
-	vector<int> b(a); //a 벡터를 복사한 벡터
-	sort(b.begin(), b.end()); //오름차순 정렬
+	sort(vB.begin(), vB.end());
 
-	//중복되는 숫자 제거
-	b.erase(unique(b.begin(), b.end()), b.end());
+	vB.erase(unique(vB.begin(), vB.end()), vB.end()); //중복제거
 
 	for (int i = 0; i < n; i++) {
-
-		//i번째 요소값의 위치 it
-		auto it = lower_bound(b.begin(), b.end(), a[i]);
-
-		cout << it - b.begin() << ' ';
+		//검색된 인덱스 값에서 초기 위치를 빼주기
+		auto it = lower_bound(vB.begin(), vB.end(), vA[i]); 
+		cout << it - vB.begin() << " ";
 	}
 }
