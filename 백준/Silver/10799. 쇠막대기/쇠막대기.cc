@@ -25,11 +25,10 @@ int solution(string str) {
 }
 
 int main() {
-	string str;
-	cin >> str;
+	string input;
+	cin >> input;
 
-	int answer = solution(str);
-	cout << answer;
+	cout << solution(input);
 
 	return 0;
 }
