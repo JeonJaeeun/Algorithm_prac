@@ -8,6 +8,7 @@ const int SIZE = 26;
 
 vector<int> countAlphabet(string str) {
 	vector<int> count(SIZE, 0);
+
 	for (int i = 0; i < str.size(); i++) {
 		count[str[i] - 'A']++;
 	}
@@ -34,7 +35,6 @@ string makePalindrome(vector<int>& count) {
 }
 
 string solution(string str) {
-	//연산 + 출력
 	vector<int> count = countAlphabet(str);
 	return makePalindrome(count);
 }
@@ -44,6 +44,6 @@ int main() {
 	cin >> input;
 
 	cout << solution(input);
-
+	
 	return 0;
 }
