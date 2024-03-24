@@ -1,48 +1,49 @@
 #include <iostream>
+#include <vector>
 #include <algorithm>
 
 using namespace std;
-int alpha[26];
-string res;
 
-//알파벳의 개수가 홀수개인 알파벳이 두개이상이면 펠린드롬 문자열이 될 수 없다.
-int main() {
-	ios_base::sync_with_stdio(false);
-	cin.tie(NULL); cout.tie(NULL);
+const int SIZE = 26;
 
-	string s;
-	cin >> s;
+vector<int> countAlphabet(string str) {
+	vector<int> count(SIZE, 0);
+	for (int i = 0; i < str.size(); i++) {
+		count[str[i] - 'A']++;
+	}
+	return count;
+}
 
-	for (int i = 0; i < s.size(); i++) { //배열에 s 저장
-		alpha[s[i] - 'A']++;
-	}
-	int oddCnt = 0;
-	int odd = -1;
-	for (int i = 0; i < 26; i++) {
-		if (alpha[i] % 2 == 1) {
-			oddCnt++;
-			odd = i;
-		}
-	}
-	//홀수개인 알파벳이 두개 이상
-	if (oddCnt > 1) {
-		res = "I'm Sorry Hansoo";
-	}
-	else {
-		string temp;
-		for (int i = 0; i < 26; i++) {
-			if (alpha[i] > 0) {
-				for (int j = 0; j < alpha[i] / 2; j++) {
-					res += i + 'A';
-				}
+string makePalindrome(vector<int>& count) {
+	string part1 = "", part2 = "", part3 = "";
+
+	for (int i = 0; i < SIZE; i++) {
+		//홀수
+		if (count[i] % 2 == 1) {
+			if (part2.size() == 1) {
+				return "I'm Sorry Hansoo";
 			}
+			part2 = (char)(i + 'A');
 		}
-		temp = res;
-		reverse(temp.begin(), temp.end());
-		if (odd != -1) {
-			res += odd + 'A';
+		for (int j = 0; j < count[i] / 2; j++) {
+			part1 += (char)(i + 'A');
+			part3 = (char)(i + 'A') + part3;
 		}
-		res += temp;
 	}
-	cout << res;
+	return part1 + part2 + part3;
+}
+
+string solution(string str) {
+	//연산 + 출력
+	vector<int> count = countAlphabet(str);
+	return makePalindrome(count);
+}
+
+int main() {
+	string input;
+	cin >> input;
+
+	cout << solution(input);
+
+	return 0;
 }
