@@ -29,6 +29,5 @@ int main() {
 	cin >> input;
 
 	cout << solution(input);
-
 	return 0;
 }
