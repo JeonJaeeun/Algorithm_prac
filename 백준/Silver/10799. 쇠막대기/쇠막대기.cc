@@ -3,7 +3,7 @@
 
 using namespace std;
 
-int solution(const string str) {
+int solution(string str) {
 	stack<char> st;
 	int answer = 0;
 
