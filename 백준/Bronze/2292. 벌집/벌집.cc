@@ -3,17 +3,13 @@
 using namespace std;
 
 int main() {
+	int N;
+	cin >> N;
 
-	int n;
-	cin >> n;
-
-	int i = 1;
-	for (int sum = 2; sum <= n; i++)
-		sum += 6 * i;
-
-	if (n == 1)
-		cout << "1";
-
-	else 
-		cout << i;
+	for (int i = 0;; i++) {
+		if (N <= 1 + 3 * i * (i + 1)) {
+			cout << i + 1 << endl;
+			return 0;
+		}
+	}
 }
