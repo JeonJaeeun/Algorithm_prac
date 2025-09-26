@@ -1,96 +1,112 @@
 #include <iostream>
 #include <vector>
 #include <queue>
-#include <algorithm>
+
 using namespace std;
 
-int n, m;
-vector<vector<int>> space;
-vector<pair<int, int>> virus;
+vector<vector<int>> mp;
+
+vector<vector<int>> time;
+
+vector<pair<int, int>> viruses;
 vector<pair<int, int>> selected;
 
-int dx[4] = { -1, 0, 1, 0 };
-int dy[4] = { 0, 1, 0, -1 };
+int n, m;
 
-int answer = 1e9;
+int dx[4] = { -1,0,1,0 };
+int dy[4] = { 0,1,0,-1 };
 
-void bfs(const vector<pair<int, int>>& selectedVirus) {
-    vector<vector<int>> dist(n, vector<int>(n, -1));
-    queue<pair<int, int>> q;
 
-    for (auto& s : selectedVirus) {
-        int x = s.first, y = s.second;
-        dist[x][y] = 0;
-        q.push({ x, y });
-    }
+int minTime = 1e9;
 
-    while (!q.empty()) {
-        auto cur = q.front();
-        q.pop();
-        int cx = cur.first, cy = cur.second;
-        for (int d = 0; d < 4; d++) {
-            int nx = cx + dx[d], ny = cy + dy[d];
-            if (nx >= 0 && ny >= 0 && nx < n && ny < n) {
-                if (space[nx][ny] != 1 && dist[nx][ny] == -1) {
-                    dist[nx][ny] = dist[cx][cy] + 1;
-                    q.push({ nx, ny });
-                }
-            }
-        }
-    }
+void spreadVirus(vector<pair<int,int>> selected) {
+	
+	//거리가 0인지 초기화 0인지 모르니까 -1로 초기화
+	time.assign(n, vector<int>(n, -1));
+	vector<vector<int>> tmp = mp;
 
-    int maxTime = 0;
-    bool valid = true;
+	queue<pair<int, int>> q;
 
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            if (space[i][j] == 0) {
-                if (dist[i][j] == -1) {
-                    valid = false;
-                    break;
-                }
-                maxTime = max(maxTime, dist[i][j]);
-            }
-        }
-        if (!valid) break;
-    }
+	for (auto s : selected) {
+		q.push(s);
+		int sx = s.first;
+		int sy = s.second;
+		time[sx][sy] = 0;
+	}
 
-    if (valid) {
-        answer = min(answer, maxTime);
-    }
+	while (!q.empty()) {
+		auto cur = q.front();
+		int x = cur.first;
+		int y = cur.second;
+		q.pop();
+
+		for (int d = 0; d < 4; d++) {
+			int nx = x + dx[d];
+			int ny = y + dy[d];
+
+			if (nx < 0 || nx >= n || ny < 0 || ny >= n) continue;
+			if (tmp[nx][ny] == 1) continue;
+			if (time[nx][ny] != -1) continue;
+
+			time[nx][ny] = time[x][y] + 1;
+			q.push({ nx,ny });
+		}
+	}
+
+	int localMax = 0;
+
+	// 최대 시간 체크
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			if (mp[i][j] == 0) {
+				if (time[i][j] == -1) return;
+				localMax = max(localMax, time[i][j]);
+			}
+		}
+	}
+
+	minTime = min(minTime, localMax);
 }
 
+// 바이러스 m개 고르는 함수 - dfs 활용
+void pickVirus (int start, int depth) {
+	
+	if (depth == m) {
+		spreadVirus(selected);
+		return;
+	}
 
-// DFS를 통해 M개의 바이러스 조합 선택 (선택된 바이러스는 selected에 저장됨)
-void pickVirus(int idx, int cnt) {
-    if (cnt == m) {
-        bfs(selected);
-        return;
-    }
-    for (int i = idx; i < virus.size(); i++) {
-        selected.push_back(virus[i]);
-        pickVirus(i + 1, cnt + 1);
-        selected.pop_back();
-    }
+	for (int i = start; i < viruses.size(); i++) {
+		int x = viruses[i].first;
+		int y = viruses[i].second;
+
+		selected.push_back({ x,y });
+		pickVirus(i + 1, depth + 1);
+		selected.pop_back();
+	}
 }
 
 int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
 
-    cin >> n >> m;
-    space.resize(n, vector<int>(n));
+	ios::sync_with_stdio(false);
+	cin.tie(nullptr);
 
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            cin >> space[i][j];
-            // 바이러스 위치 (2)만 별도로 저장 (빈 칸 0, 벽 1)
-            if (space[i][j] == 2)
-                virus.push_back({ i, j });
-        }
-    }
+	cin >> n >> m;
 
-    pickVirus(0, 0);
-    cout << (answer == 1e9 ? -1 : answer) << "\n";
-    return 0;
+	mp.assign(n, vector<int>(n));
+
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			cin >> mp[i][j];
+			if (mp[i][j] == 2) {
+				viruses.push_back({ i,j });
+			}
+		}
+	}
+
+	pickVirus(0, 0);
+	
+	if (minTime == (int)1e9) cout << -1 << endl;
+	else
+		cout << minTime << endl;
 }
